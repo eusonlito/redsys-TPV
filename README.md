@@ -5,7 +5,6 @@ Este script te permitirá generar los formularios para la integración de la pas
 
 Ejemplo de envío a pasarela:
 
---------
     <?php
     include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
 
@@ -50,7 +49,6 @@ El banco siempre se comunicará con nosotros a través de esta url, sea correcto
 
 Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direccion-control-pago) que valide los pagos de la siguiente manera:
 
---------
     <?php
     include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
 
@@ -95,3 +93,33 @@ Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direc
     die();
 
 Simplemente con esto ya tenemos el proceso completado.
+
+--------
+
+Una manera más elegante sería guardando la configuración en un fichero e incluirlo directamente en la carga de la clase:
+
+''config.php''
+
+    <?php
+    return array(
+        'Environment' => 'test', // Puedes indicar test o real
+        'MerchantCode' => '1234567890',
+        'Key' => 'asdfghjkd0123456789',
+        'Terminal' => '1',
+        'TransactionType' => '0',
+        'Currency' => '978',
+        'MerchantName' => 'COMERCIO',
+        'Titular' => 'Mi Comercio',
+        'Currency' => '978',
+        'Terminal' => '1',
+        'ConsumerLanguage' => '001'
+    );
+
+y así incluimos directamente el fichero y evitamos ensuciar el script con líneas de configuración
+
+    <?php
+    include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+
+    $Redsys = new \ANS\Redsys\Redsys(require(__DIR__.'/config.php'));
+
+Para gustos, colores :)
