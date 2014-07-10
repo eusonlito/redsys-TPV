@@ -48,7 +48,7 @@ Este script no será visible ni debe responder nada, simplemente verifica el pag
 
 El banco siempre se comunicará con nosotros a través de esta url, sea correcto o incorrecto.
 
-Podemos realizar un script que valide los pagos de la siguiente manera:
+Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direccion-control-pago) que valide los pagos de la siguiente manera:
 
 --------
     <?php
