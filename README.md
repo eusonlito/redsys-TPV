@@ -42,7 +42,7 @@ echo '<form action="'.$TPV->getEnvironment().'" method="post">'.$TPV->getFormHid
 die('<script>document.forms[0].submit();</script>');
 ```
 
-Para realizar el control de los pagos, la TPV se comunicará con nosotros a través de la url indicada en 'MerchantURL'.
+Para realizar el control de los pagos, la TPV se comunicará con nosotros a través de la url indicada en **MerchantURL**.
 
 Este script no será visible ni debe responder nada, simplemente verifica el pago.
 
