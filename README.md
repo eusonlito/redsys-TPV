@@ -1,7 +1,7 @@
 Redsys
 =====
 
-Este script te permitirá generar los formularios para la integración de la pasarela de pago de Redsys (antes Sermepa / Servired)).
+Este script te permitirá generar los formularios para la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
 
 Ejemplo de envío a pasarela:
 
