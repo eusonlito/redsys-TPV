@@ -125,3 +125,5 @@ $Redsys = new \ANS\Redsys\Redsys(require(__DIR__.'/config.php'));
 ```
 
 Para gustos, colores :)
+
+Si deseas más información sobre parámetros u opciones, Google puede echarte una mano https://www.google.es/search?q=manual+instalaci%C3%B3n+redsys+php+filetype%3Apdf
