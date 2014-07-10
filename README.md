@@ -98,9 +98,7 @@ Simplemente con esto ya tenemos el proceso completado.
 
 --------
 
-Una manera más elegante sería guardando la configuración en un fichero e incluirlo directamente en la carga de la clase:
-
-`config.php`
+Una manera más elegante sería guardando la configuración en un fichero llamado por ejemplo `config.php` e incluirlo directamente en la carga de la clase:
 
 ```php
 return array(
