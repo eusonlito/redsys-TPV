@@ -1,7 +1,9 @@
 <?php
-namespace ANS\Redsys;
+namespace Redsys\Tpv;
 
-class Redsys
+use Exception;
+
+class Tpv
 {
     private $options = array(
         'Version' => '0.1',
@@ -37,14 +39,14 @@ class Redsys
         } elseif ($value !== null) {
             $options = array($option => $value);
         } else {
-            throw new \Exception(sprintf('Option <strong>%s</strong> can not be empty', $option));
+            throw new Exception(sprintf('Option <strong>%s</strong> can not be empty', $option));
         }
 
         $options = array_merge($this->options, $options);
 
         foreach ($this->o_required as $option) {
             if (empty($options[$option])) {
-                throw new \Exception(sprintf('Option <strong>%s</strong> is required', $option));
+                throw new Exception(sprintf('Option <strong>%s</strong> is required', $option));
             }
 
             $this->options[$option] = $options[$option];
@@ -82,7 +84,7 @@ class Redsys
     {
         if (empty($this->environments[$key])) {
             $envs = implode('|', array_keys($this->environments));
-            throw new \Exception(sprintf('Environment <strong>%s</strong> is not valid [%s]', $key, $envs));
+            throw new Exception(sprintf('Environment <strong>%s</strong> is not valid [%s]', $key, $envs));
         }
 
         return $key ? $this->environments[$key] : $this->environments;
@@ -133,7 +135,7 @@ class Redsys
     public function getFormHiddens()
     {
         if (empty($this->hidden)) {
-            throw new \Exception('Form fields must be initialized previously');
+            throw new Exception('Form fields must be initialized previously');
         }
 
         $html = '';
@@ -249,9 +251,9 @@ class Redsys
         $len = strlen($order);
 
         if (($len < 4) || ($len > 12)) {
-            throw new \Exception('Order code must have more than 4 digits and less than 12');
+            throw new Exception('Order code must have more than 4 digits and less than 12');
         } elseif (!preg_match('/^[0-9]{4}[0-9a-zA-Z]{0,8}$/', $order)) {
-            throw new \Exception('First four order digits must be numbers and then only are allowed numbers and letters');
+            throw new Exception('First four order digits must be numbers and then only are allowed numbers and letters');
         }
 
         return $order;
@@ -276,7 +278,7 @@ class Redsys
 
         foreach ($fields as $field) {
             if (!isset($this->values[$prefix.$field])) {
-                throw new \Exception(sprintf('Field <strong>%s</strong> is empty and is required to create signature key', $field));
+                throw new Exception(sprintf('Field <strong>%s</strong> is empty and is required to create signature key', $field));
             }
 
             $key .= $this->values[$prefix.$field];
@@ -290,7 +292,7 @@ class Redsys
         $prefix = 'Ds_';
 
         if (empty($post) || empty($post[$prefix.'Signature'])) {
-            throw new \Exception('_POST data is empty');
+            throw new Exception('_POST data is empty');
         }
 
         $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
@@ -298,7 +300,7 @@ class Redsys
 
         foreach ($fields as $field) {
             if (empty($post[$prefix.$field])) {
-                throw new \Exception(sprintf('Field <strong>%s</strong> is empty and is required to verify transaction'));
+                throw new Exception(sprintf('Field <strong>%s</strong> is empty and is required to verify transaction'));
             }
 
             $key .= $post[$prefix.$field];
@@ -307,13 +309,13 @@ class Redsys
         $signature = strtoupper(sha1($key.$this->options['Key']));
 
         if ($signature !== $post[$prefix.'Signature']) {
-            throw new \Exception(sprintf('Signature not valid (%s != %s)', $signature, $post[$prefix.'Signature']));
+            throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $post[$prefix.'Signature']));
         }
 
         $response = (int)$post[$prefix.'Response'];
 
         if (($response >= 100) && ($response !== 900)) {
-            throw new \Exception(sprintf('Transaction error. Code: <strong>%s</strong>', $post[$prefix.'Response']));
+            throw new Exception(sprintf('Transaction error. Code: <strong>%s</strong>', $post[$prefix.'Response']));
         }
 
         return $post[$prefix.'Signature'];

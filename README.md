@@ -8,11 +8,13 @@ Este script te permitirá generar los formularios para la integración de la pas
 Este proceso se realiza para pagos en el momento, sin necesidad de confirmación futura (TransactionType = 0)
 
 ```php
-include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+# Sólo incluimos el autoload si la instalación no se realiza a través de Composer
+
+include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$Redsys = new \ANS\Redsys\Redsys(array(
+$TPV = new Redsys\Tpv\Tpv(array(
     'Environment' => 'test', // Puedes indicar test o real
     'MerchantCode' => '1234567890',
     'Key' => 'asdfghjkd0123456789',
@@ -27,7 +29,7 @@ $Redsys = new \ANS\Redsys\Redsys(array(
 
 # Indicamos los campos para el pedido
 
-$Redsys->setFormHiddens(array(
+$TPV->setFormHiddens(array(
     'TransactionType' => '0',
     'MerchantData' => 'Televisor de 50 pulgadas',
     'Order' => '012121323',
@@ -53,11 +55,11 @@ El banco siempre se comunicará con nosotros a través de esta url, sea correcto
 Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direccion-control-pago) que valide los pagos de la siguiente manera:
 
 ```php
-include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$Redsys = new \ANS\Redsys\Redsys(array(
+$TPV = new Redsys\Tpv\Tpv(array(
     'Environment' => 'test', // Puedes indicar test o real
     'MerchantCode' => '1234567890',
     'Key' => 'asdfghjkd0123456789',
@@ -73,7 +75,7 @@ $Redsys = new \ANS\Redsys\Redsys(array(
 # Realizamos la comprobación de la transacción
 
 try {
-    $Redsys->checkTransaction($_POST);
+    $TPV->checkTransaction($_POST);
 } catch (\Exception $e) {
     file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
     die();
@@ -105,11 +107,11 @@ El proceso es exactamente igual que el anterior, sólamente se debe cambiar el v
 Una vez completado todo el proceso anterior, debemos crear dos scripts en nuestro proyecto, uno para iniciar la confirmación del pago y otro para verificar el proceso.
 
 ```php
-include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$Redsys = new \ANS\Redsys\Redsys(array(
+$TPV = new Redsys\Tpv\Tpv(array(
     'Environment' => 'test', // Puedes indicar test o real
     'MerchantCode' => '1234567890',
     'Key' => 'asdfghjkd0123456789',
@@ -124,13 +126,13 @@ $Redsys = new \ANS\Redsys\Redsys(array(
 
 # Indicamos los campos para la confirmación del pago
 
-$Redsys->sendXml([
+$TPV->sendXml(array(
     'TransactionType' => '2', // Código para la Confirmación del cargo
     'MerchantURL' => 'http://dominio.com/direccion-control-pago-xml', // A esta URL enviará el banco la confirmación del cobro
     'Amount' => '568,25', // La cantidad final a cobrar
     'Order' => '012121323', // El número de pedido, que debe existir en el sistema bancario a través de una autorización previa
     'MerchantData' => 'Televisor de 50 pulgadas',
-]));
+));
 ````
 
 Esta ejecución nos devolverá un XML con una respuesta sobre este envío, pero la respuesta sobre el resultado de la operación serán enviada desde el banco a la URL indicada en MerchantURL.
@@ -140,11 +142,11 @@ Para verificar que el envío se ha realizado correctamente, el banco devuelve un
 Ahora vamos a por el script de `http://dominio.com/direccion-control-pago-xml` en que recogemos el resultado del pago:
 
 ```php
-include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$Redsys = new \ANS\Redsys\Redsys(array(
+$TPV = new Redsys\Tpv\Tpv(array(
     'Environment' => 'test', // Puedes indicar test o real
     'MerchantCode' => '1234567890',
     'Key' => 'asdfghjkd0123456789',
@@ -158,12 +160,12 @@ $Redsys = new \ANS\Redsys\Redsys(array(
 
 # Obtenemos los datos remitidos por el banco en formato `array`
 
-$datos = $Redsys->xmlString2array($_POST['datos']);
+$datos = $TPV->xmlString2array($_POST['datos']);
 
 # Realizamos la comprobación de la transacción
 
 try {
-    $Redsys->checkTransaction($datos);
+    $TPV->checkTransaction($datos);
 } catch (\Exception $e) {
     file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
     die();
@@ -210,9 +212,9 @@ return array(
 y así incluimos directamente el fichero y evitamos ensuciar el script con líneas de configuración
 
 ```php
-include (__DIR__.'/libs/ANS/Redsys/Redsys.php');
+include (__DIR__.'/src/autoload.php');
 
-$Redsys = new \ANS\Redsys\Redsys(require(__DIR__.'/config.php'));
+$TPV = new Redsys\Tpv\Tpv(require(__DIR__.'/config.php'));
 ```
 
 Para gustos, colores :)

@@ -1,7 +1,7 @@
 <?php
-namespace ANS\Redsys;
+namespace Redsys\Tpv;
 
-use ANS\Redsys\Debug;
+use DOMDocument, DOMXPath, Exception;
 
 class Curl
 {
@@ -14,7 +14,7 @@ class Curl
     public function __construct(array $settings)
     {
         if (empty($settings['base'])) {
-            throw new \Exception('"base" option is empty');
+            throw new Exception('"base" option is empty');
         }
 
         if (empty($settings['cookie'])) {
@@ -85,10 +85,7 @@ class Curl
             if (empty($post)) {
                 Debug::d($url);
             } else {
-                Debug::d([
-                    'url' => $url,
-                    'post' => $post
-                ]);
+                Debug::d(['url' => $url, 'post' => $post]);
             }
         }
 
@@ -132,17 +129,17 @@ class Curl
     public function getXPath ()
     {
         if (empty($this->html)) {
-            return new \DOMXPath(new \DOMDocument);
+            return new DOMXPath(new DOMDocument);
         }
 
         libxml_use_internal_errors(true);
 
-        $DOM = new \DOMDocument;
+        $DOM = new DOMDocument;
         $DOM->recover = true;
         $DOM->preserveWhiteSpace = false;
         $DOM->loadHtml($this->html);
 
-        $XPath = new \DOMXPath($DOM);
+        $XPath = new DOMXPath($DOM);
 
         libxml_use_internal_errors(false);
 

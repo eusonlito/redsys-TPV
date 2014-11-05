@@ -1,5 +1,5 @@
 <?php
-namespace ANS\Redsys;
+namespace Redsys\Tpv;
 
 class Debug
 {
