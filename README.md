@@ -50,6 +50,10 @@ Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direc
 ```php
 include (__DIR__.'/src/autoload.php');
 
+# Incluye tu arquivo de configuración (copia config.php para config.local.php)
+
+$config = require (__DIR__.'/config.local.php');
+
 # Cargamos la clase con los parámetros base
 
 $TPV = new Redsys\Tpv\Tpv($config);
@@ -91,6 +95,10 @@ Una vez completado todo el proceso anterior, debemos crear dos scripts en nuestr
 ```php
 include (__DIR__.'/src/autoload.php');
 
+# Incluye tu arquivo de configuración (copia config.php para config.local.php)
+
+$config = require (__DIR__.'/config.local.php');
+
 # Cargamos la clase con los parámetros base
 
 $TPV = new Redsys\Tpv\Tpv($config);
@@ -114,6 +122,10 @@ Ahora vamos a por el script de `http://dominio.com/direccion-control-pago-xml` e
 
 ```php
 include (__DIR__.'/src/autoload.php');
+
+# Incluye tu arquivo de configuración (copia config.php para config.local.php)
+
+$config = require (__DIR__.'/config.local.php');
 
 # Cargamos la clase con los parámetros base
 
