@@ -193,9 +193,7 @@ class Tpv
 
     private function setXmlFromValues()
     {
-        $xml = array(
-            'DS_Version' => $this->options['Version']
-        );
+        $xml = array('DS_Version' => $this->options['Version']);
 
         foreach ($this->values as $key => $value) {
             $xml[strtoupper($key)] = $value;

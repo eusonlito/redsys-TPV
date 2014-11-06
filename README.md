@@ -1,7 +1,7 @@
 Redsys TPV
 =====
 
-Esta librería te permitirá generar los formularios y realizar el control de procesos en la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
+Este script te permitirá generar los formularios para la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
 
 ## Ejemplo de pago instantáneo
 
@@ -12,20 +12,13 @@ Este proceso se realiza para pagos en el momento, sin necesidad de confirmación
 
 include (__DIR__.'/src/autoload.php');
 
+# Incluye tu arquivo de configuración (copia config.php para config.local.php)
+
+$config = require (__DIR__.'/config.local.php');
+
 # Cargamos la clase con los parámetros base
 
-$TPV = new Redsys\Tpv\Tpv(array(
-    'Environment' => 'test', // Puedes indicar test o real
-    'MerchantCode' => '1234567890',
-    'Key' => 'asdfghjkd0123456789',
-    'Terminal' => '1',
-    'Currency' => '978',
-    'MerchantName' => 'COMERCIO',
-    'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1',
-    'ConsumerLanguage' => '001'
-));
+$TPV = new Redsys\Tpv\Tpv($config);
 
 # Indicamos los campos para el pedido
 
@@ -59,18 +52,7 @@ include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$TPV = new Redsys\Tpv\Tpv(array(
-    'Environment' => 'test', // Puedes indicar test o real
-    'MerchantCode' => '1234567890',
-    'Key' => 'asdfghjkd0123456789',
-    'Terminal' => '1',
-    'Currency' => '978',
-    'MerchantName' => 'COMERCIO',
-    'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1',
-    'ConsumerLanguage' => '001'
-));
+$TPV = new Redsys\Tpv\Tpv($config);
 
 # Realizamos la comprobación de la transacción
 
@@ -111,18 +93,7 @@ include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$TPV = new Redsys\Tpv\Tpv(array(
-    'Environment' => 'test', // Puedes indicar test o real
-    'MerchantCode' => '1234567890',
-    'Key' => 'asdfghjkd0123456789',
-    'Terminal' => '1',
-    'Currency' => '978',
-    'MerchantName' => 'COMERCIO',
-    'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1',
-    'ConsumerLanguage' => '001'
-));
+$TPV = new Redsys\Tpv\Tpv($config);
 
 # Indicamos los campos para la confirmación del pago
 
@@ -133,7 +104,7 @@ $TPV->sendXml(array(
     'Order' => '012121323', // El número de pedido, que debe existir en el sistema bancario a través de una autorización previa
     'MerchantData' => 'Televisor de 50 pulgadas',
 ));
-````
+```
 
 Esta ejecución nos devolverá un XML con una respuesta sobre este envío, pero la respuesta sobre el resultado de la operación serán enviada desde el banco a la URL indicada en MerchantURL.
 
@@ -146,17 +117,7 @@ include (__DIR__.'/src/autoload.php');
 
 # Cargamos la clase con los parámetros base
 
-$TPV = new Redsys\Tpv\Tpv(array(
-    'Environment' => 'test', // Puedes indicar test o real
-    'MerchantCode' => '1234567890',
-    'Key' => 'asdfghjkd0123456789',
-    'Terminal' => '1',
-    'Currency' => '978',
-    'MerchantName' => 'COMERCIO',
-    'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1'
-));
+$TPV = new Redsys\Tpv\Tpv($config);
 
 # Obtenemos los datos remitidos por el banco en formato `array`
 
@@ -191,32 +152,23 @@ die();
 
 --------
 
-Una manera más elegante sería guardando la configuración en un fichero llamado por ejemplo `config.php` e incluirlo directamente en la carga de la clase:
+# Integración con Redsys/Faker
+
+Si deseas probar la conexión con un servidor propio de Redsys, puedes instalar el siguiente servicio en tu servidor https://github.com/eusonlito/redsys-Fake
+
+La configuración para conexión a este servicio sería la siguiente
 
 ```php
-return array(
-    'Environment' => 'test', // Puedes indicar test o real
-    'MerchantCode' => '1234567890',
-    'Key' => 'asdfghjkd0123456789',
-    'Terminal' => '1',
-    'TransactionType' => '0',
-    'Currency' => '978',
-    'MerchantName' => 'COMERCIO',
-    'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1',
-    'ConsumerLanguage' => '001'
-);
+$TPV = new Redsys\Tpv\Tpv(array(
+    'environments' => array(
+        'local' => 'http://redsys-fake.mydomain.com'
+    ),
+
+    'Environment' => 'local',
+    'Key' => 'asdfghjkd0123456789', // Debe coincidir con el valor de Key del entorno de pruebas
+
+    ....
+));
 ```
-
-y así incluimos directamente el fichero y evitamos ensuciar el script con líneas de configuración
-
-```php
-include (__DIR__.'/src/autoload.php');
-
-$TPV = new Redsys\Tpv\Tpv(require(__DIR__.'/config.php'));
-```
-
-Para gustos, colores :)
 
 Si deseas más información sobre parámetros u opciones, Google puede echarte una mano https://www.google.es/search?q=manual+instalaci%C3%B3n+redsys+php+filetype%3Apdf

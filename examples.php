@@ -3,24 +3,16 @@ $step = empty($_GET['step']) ? 1 : (int) $_GET['step'];
 
 include __DIR__.'/src/autoload.php';
 
+# Carga tu fichero con la configuración personalizada en config.local.php
+$config = require __DIR__.'/config.php';
+
 if ($step === 1) {
     # Ejemplo de pago instantáneo
     # Este proceso se realiza para pagos en el momento, sin necesidad de confirmación futura (TransactionType = 0)
 
     # Cargamos la clase con los parámetros base
 
-    $TPV = new Redsys\Tpv\Tpv(array(
-        'Environment' => 'test', // Puedes indicar test o real
-        'MerchantCode' => '1234567890',
-        'Key' => 'asdfghjkd0123456789',
-        'Terminal' => '1',
-        'Currency' => '978',
-        'MerchantName' => 'COMERCIO',
-        'Titular' => 'Mi Comercio',
-        'Currency' => '978',
-        'Terminal' => '1',
-        'ConsumerLanguage' => '001'
-    ));
+    $TPV = new Redsys\Tpv\Tpv($config);
 
     # Indicamos los campos para el pedido
 
@@ -46,18 +38,7 @@ if ($step === 2) {
 
     # Cargamos la clase con los parámetros base
 
-    $TPV = new Redsys\Tpv\Tpv(array(
-        'Environment' => 'test', // Puedes indicar test o real
-        'MerchantCode' => '1234567890',
-        'Key' => 'asdfghjkd0123456789',
-        'Terminal' => '1',
-        'Currency' => '978',
-        'MerchantName' => 'COMERCIO',
-        'Titular' => 'Mi Comercio',
-        'Currency' => '978',
-        'Terminal' => '1',
-        'ConsumerLanguage' => '001'
-    ));
+    $TPV = new Redsys\Tpv\Tpv($config);
 
     # Realizamos la comprobación de la transacción
 
@@ -90,18 +71,7 @@ if ($step === 3) {
 
     # Cargamos la clase con los parámetros base
 
-    $TPV = new Redsys\Tpv\Tpv(array(
-        'Environment' => 'test', // Puedes indicar test o real
-        'MerchantCode' => '1234567890',
-        'Key' => 'asdfghjkd0123456789',
-        'Terminal' => '1',
-        'Currency' => '978',
-        'MerchantName' => 'COMERCIO',
-        'Titular' => 'Mi Comercio',
-        'Currency' => '978',
-        'Terminal' => '1',
-        'ConsumerLanguage' => '001'
-    ));
+    $TPV = new Redsys\Tpv\Tpv($config);
 
     # Indicamos los campos para la confirmación del pago
 
@@ -121,17 +91,7 @@ if ($step === 4) {
 
     # Cargamos la clase con los parámetros base
 
-    $TPV = new Redsys\Tpv\Tpv(array(
-        'Environment' => 'test', // Puedes indicar test o real
-        'MerchantCode' => '1234567890',
-        'Key' => 'asdfghjkd0123456789',
-        'Terminal' => '1',
-        'Currency' => '978',
-        'MerchantName' => 'COMERCIO',
-        'Titular' => 'Mi Comercio',
-        'Currency' => '978',
-        'Terminal' => '1'
-    ));
+    $TPV = new Redsys\Tpv\Tpv($config);
 
     # Obtenemos los datos remitidos por el banco en formato `array`
 

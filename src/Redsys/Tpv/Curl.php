@@ -5,7 +5,7 @@ use DOMDocument, DOMXPath, Exception;
 
 class Curl
 {
-    private $settings = [];
+    private $settings = array();
 
     private $connect;
     private $html;
@@ -38,12 +38,12 @@ class Curl
 
         $this->connect = curl_init();
 
-        $header = [
+        $header = array(
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36',
             'Connection: keep-alive',
             'Cache-Control: no-cache',
             'Expect:'
-        ];
+        );
 
         curl_setopt($this->connect, CURLOPT_HEADER, false);
         curl_setopt($this->connect, CURLOPT_HTTPHEADER, $header);
@@ -72,7 +72,7 @@ class Curl
         curl_setopt($this->connect, $option, $value);
     }
 
-    public function exec($url, $get = [], $post = [])
+    public function exec($url, $get = array(), $post = array())
     {
         $url = $this->settings['base'].str_replace($this->settings['base'], '', $url);
 
@@ -85,7 +85,7 @@ class Curl
             if (empty($post)) {
                 Debug::d($url);
             } else {
-                Debug::d(['url' => $url, 'post' => $post]);
+                Debug::d(array('url' => $url, 'post' => $post));
             }
         }
 
@@ -99,12 +99,12 @@ class Curl
         return $this->html;
     }
 
-    public function get($url, $get = [])
+    public function get($url, $get = array())
     {
         return $this->exec($url, $get);
     }
 
-    public function post($url, $get = [], $post = [])
+    public function post($url, $get = array(), $post = array())
     {
         curl_setopt($this->connect, CURLOPT_POST, true);
         curl_setopt($this->connect, CURLOPT_POSTFIELDS, $post);
