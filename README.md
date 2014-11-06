@@ -164,7 +164,7 @@ die();
 
 --------
 
-# Integración con Redsys/Faker
+# Integración con Redsys/Fake
 
 Si deseas probar la conexión con un servidor propio de Redsys, puedes instalar el siguiente servicio en tu servidor https://github.com/eusonlito/redsys-Fake
 
