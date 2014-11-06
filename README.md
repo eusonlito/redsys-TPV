@@ -1,7 +1,7 @@
-Redsys
+Redsys TPV
 =====
 
-Este script te permitirá generar los formularios para la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
+Esta librería te permitirá generar los formularios y realizar el control de procesos en la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
 
 ## Ejemplo de pago instantáneo
 
