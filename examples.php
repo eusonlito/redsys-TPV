@@ -1,7 +1,7 @@
 <?php
-$step = empty($_GET['step']) ? 1 : (int)$_GET['step'];
+$step = empty($_GET['step']) ? 1 : (int) $_GET['step'];
 
-include (__DIR__.'/src/autoload.php');
+include __DIR__.'/src/autoload.php';
 
 if ($step === 1) {
     # Ejemplo de pago instantáneo

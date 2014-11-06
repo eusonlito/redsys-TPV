@@ -58,6 +58,10 @@ class Tpv
             }
         }
 
+        if (isset($options['environments'])) {
+            $this->environments = array_merge($this->environments, $options['environments']);
+        }
+
         $this->setEnvironment($options['Environment']);
 
         return $this;
@@ -72,6 +76,7 @@ class Tpv
     {
 
         $this->environment = $this->getEnvironments($mode);
+
         return $this;
     }
 
@@ -201,7 +206,7 @@ class Tpv
 
     private function xmlArray2string($xml)
     {
-        $doc = new \DOMDocument;
+        $doc = new \DOMDocument();
         $doc->formatOutput = true;
 
         $root = $doc->createElement('DATOSENTRADA');
@@ -212,7 +217,7 @@ class Tpv
 
         $doc->appendChild($root);
 
-        return (string)$doc->saveXML();
+        return (string) $doc->saveXML();
     }
 
     public function xmlString2array($xml)
@@ -312,7 +317,7 @@ class Tpv
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $post[$prefix.'Signature']));
         }
 
-        $response = (int)$post[$prefix.'Response'];
+        $response = (int) $post[$prefix.'Response'];
 
         if (($response >= 100) && ($response !== 900)) {
             throw new Exception(sprintf('Transaction error. Code: <strong>%s</strong>', $post[$prefix.'Response']));

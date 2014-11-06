@@ -3,7 +3,7 @@ namespace Redsys\Tpv;
 
 class Debug
 {
-    static public function d($info, $title = '', $shift = 1)
+    public static function d($info, $title = '', $shift = 1)
     {
         $backtrace = debug_backtrace();
 
@@ -22,7 +22,7 @@ class Debug
         echo '<pre>'; var_dump($info); echo '</pre>';
     }
 
-    static public function dd($info, $title = '')
+    public static function dd($info, $title = '')
     {
         die(self::d($info, $title, 2));
     }

@@ -126,15 +126,15 @@ class Curl
         $this->settings['base'] = $base['scheme'].'://'.$base['host'];
     }
 
-    public function getXPath ()
+    public function getXPath()
     {
         if (empty($this->html)) {
-            return new DOMXPath(new DOMDocument);
+            return new DOMXPath(new DOMDocument());
         }
 
         libxml_use_internal_errors(true);
 
-        $DOM = new DOMDocument;
+        $DOM = new DOMDocument();
         $DOM->recover = true;
         $DOM->preserveWhiteSpace = false;
         $DOM->loadHtml($this->html);
