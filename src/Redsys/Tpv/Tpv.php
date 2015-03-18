@@ -21,7 +21,7 @@ class Tpv
     private $environment = '';
     private $environments = array(
         'test' => 'https://sis-t.redsys.es:25443/sis',
-        'real' => 'https://sis.sermepa.es/sis'
+        'real' => 'https://sis.redsys.es/sis'
     );
 
     private $values = array();
