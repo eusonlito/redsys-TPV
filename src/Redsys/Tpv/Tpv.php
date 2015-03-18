@@ -16,7 +16,7 @@ class Tpv
     private $option_prefix = 'Ds_Merchant_';
 
     private $o_required = array('Environment', 'Currency', 'Terminal', 'ConsumerLanguage', 'MerchantCode', 'Key', 'MerchantName', 'Titular');
-    private $o_optional = array('UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL');
+    private $o_optional = array('UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods');
 
     private $environment = '';
     private $environments = array(
@@ -117,6 +117,7 @@ class Tpv
         $this->setValueDefault($options, 'ConsumerLanguage');
         $this->setValueDefault($options, 'UrlOK');
         $this->setValueDefault($options, 'UrlKO');
+        $this->setValueDefault($options, 'PayMethods');
 
         $this->setValue($options, 'MerchantData');
         $this->setValue($options, 'Order');
