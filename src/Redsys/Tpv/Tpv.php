@@ -299,6 +299,10 @@ class Tpv
             throw new Exception('_POST data is empty');
         }
 
+        if (isset($post[$prefix.'ErrorCode']) && $post[$prefix.'ErrorCode']) {
+            throw new Exception(sprintf('TPV returned error code %s', $post[$prefix.'ErrorCode']));
+        }
+
         $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
         $key = '';
 
