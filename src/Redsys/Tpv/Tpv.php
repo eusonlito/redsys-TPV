@@ -311,9 +311,9 @@ class Tpv
             }
         }
 
-        $error = isset($post[$prefix.'Response']) ? $post[$prefix.'Response'] : null;
+        $response = isset($post[$prefix.'Response']) ? $post[$prefix.'Response'] : null;
 
-        if (is_null($error) || (strlen($response) === 0)) {
+        if (is_null($response) || (strlen($response) === 0)) {
             throw new Exception('Response code is empty (no length)');
         }
 
