@@ -11,12 +11,12 @@
     ],
     "require": {
         "php": ">=5.3",
-        "redsys/messages": "dev-master"
+        "redsys/messages": "1.*"
     },
     "autoload": {
         "psr-4": {
             "Redsys\\Tpv\\": "src/Redsys/Tpv/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
