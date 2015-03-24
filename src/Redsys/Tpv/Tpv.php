@@ -2,6 +2,7 @@
 namespace Redsys\Tpv;
 
 use Exception;
+use Redsys\Messages\Messages;
 
 class Tpv
 {
@@ -299,14 +300,22 @@ class Tpv
             throw new Exception('_POST data is empty');
         }
 
-        if (isset($post[$prefix.'ErrorCode']) && $post[$prefix.'ErrorCode']) {
-            throw new Exception(sprintf('TPV returned error code %s', $post[$prefix.'ErrorCode']));
+        $error = isset($post[$prefix.'ErrorCode']) ? $post[$prefix.'ErrorCode'] : null;
+
+        if ($error) {
+            $message = Messages::getByCode($error);
+            throw new Exception(sprintf('TPV returned error code %s: %s', [$error, $message['message']]));
         }
 
-        $response = (int)$post[$prefix.'Response'];
+        $response = $post[$prefix.'Response'];
 
-        if ((strlen($post[$prefix.'Response']) === 0) || ($response < 0) || ($response > 99)) {
-            throw new Exception(sprintf('Response code (%s) is Transaction Denied', $post[$prefix.'Response']));
+        if (strlen($response) === 0) {
+            throw new Exception('Response code is empty (no length)');
+        }
+
+        if (((int)$response < 0) || ((int)$response > 99)) {
+            $message = Messages::getByCode($response);
+            throw new Exception(sprintf('Response code is Transaction Denied %s: %s', [$response, $message['message']]));
         }
 
         $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
