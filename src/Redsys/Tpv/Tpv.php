@@ -303,7 +303,9 @@ class Tpv
             throw new Exception(sprintf('TPV returned error code %s', $post[$prefix.'ErrorCode']));
         }
 
-        if (!preg_match('/^0[0-9]{2}$/', $post[$prefix.'Response'])) {
+        $response = (int)$post[$prefix.'Response'];
+
+        if ((strlen($post[$prefix.'Response']) === 0) || ($response < 0) || ($response > 99)) {
             throw new Exception(sprintf('Response code (%s) is Transaction Denied', $post[$prefix.'Response']));
         }
 
