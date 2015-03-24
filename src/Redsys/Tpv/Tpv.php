@@ -2,6 +2,7 @@
 namespace Redsys\Tpv;
 
 use Exception;
+use DOMDocument, DOMElement;
 use Redsys\Messages\Messages;
 
 class Tpv
@@ -206,13 +207,13 @@ class Tpv
 
     private function xmlArray2string($xml)
     {
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->formatOutput = true;
 
         $root = $doc->createElement('DATOSENTRADA');
 
         foreach ($xml as $key => $value) {
-            $root->appendChild((new \DOMElement($key, $value)));
+            $root->appendChild((new DOMElement($key, $value)));
         }
 
         $doc->appendChild($root);
@@ -303,19 +304,25 @@ class Tpv
         $error = isset($post[$prefix.'ErrorCode']) ? $post[$prefix.'ErrorCode'] : null;
 
         if ($error) {
-            $message = Messages::getByCode($error);
-            throw new Exception(sprintf('TPV returned error code %s: %s', [$error, $message['message']]));
+            if ($message = Messages::getByCode($error)) {
+                throw new Exception(sprintf('TPV returned error code %s: %s', $error, $message['message']));
+            } else {
+                throw new Exception(sprintf('TPV returned unknown error code %s', $error));
+            }
         }
 
-        $response = $post[$prefix.'Response'];
+        $error = isset($post[$prefix.'Response']) ? $post[$prefix.'Response'] : null;
 
-        if (strlen($response) === 0) {
+        if (is_null($error) || (strlen($response) === 0)) {
             throw new Exception('Response code is empty (no length)');
         }
 
         if (((int)$response < 0) || ((int)$response > 99)) {
-            $message = Messages::getByCode($response);
-            throw new Exception(sprintf('Response code is Transaction Denied %s: %s', [$response, $message['message']]));
+            if ($message = Messages::getByCode($response)) {
+                throw new Exception(sprintf('Response code is Transaction Denied %s: %s', $response, $message['message']));
+            } else {
+                throw new Exception(sprintf('Response code is unknown %s', $response));
+            }
         }
 
         $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
