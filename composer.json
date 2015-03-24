@@ -18,5 +18,5 @@
             "Redsys\\Tpv\\": "src/Redsys/Tpv/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }
