@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.3",
-        "redsys/messages": "master-dev"
+        "redsys/messages": "dev-master"
     },
     "autoload": {
         "psr-4": {
