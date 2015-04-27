@@ -8,7 +8,5 @@ return array(
     'Currency' => '978',
     'MerchantName' => 'COMERCIO',
     'Titular' => 'Mi Comercio',
-    'Currency' => '978',
-    'Terminal' => '1',
     'ConsumerLanguage' => '001'
 );
