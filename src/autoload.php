@@ -1,7 +1,7 @@
 <?php
-function RedsysAutoload($className)
+spl_autoload_register(function ($className)
 {
-    if (strpos($className, 'Redsys') !== 0) {
+    if (strpos($className, 'Redsys\\Tpv') !== 0) {
         return;
     }
 
@@ -18,6 +18,4 @@ function RedsysAutoload($className)
     if (is_file($fileName)) {
         require $fileName;
     }
-}
-
-spl_autoload_register('RedsysAutoload');
+});

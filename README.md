@@ -3,15 +3,19 @@ Redsys TPV
 
 Este script te permitirá generar los formularios para la integración de la pasarela de pago de Redsys (antes Sermepa / Servired).
 
+## Instalación
+
+Añade las dependencias vía composer: `"redsys/tpv": "1.*"`
+
+```bash
+composer update
+```
+
 ## Ejemplo de pago instantáneo
 
 Este proceso se realiza para pagos en el momento, sin necesidad de confirmación futura (TransactionType = 0)
 
 ```php
-# Sólo incluimos el autoload si la instalación no se realiza a través de Composer
-
-include (__DIR__.'/src/autoload.php');
-
 # Incluye tu arquivo de configuración (copia config.php para config.local.php)
 
 $config = require (__DIR__.'/config.local.php');
@@ -48,8 +52,6 @@ El banco siempre se comunicará con nosotros a través de esta url, sea correcto
 Podemos realizar un script (Lo que en el ejemplo sería http://dominio.com/direccion-control-pago) que valide los pagos de la siguiente manera:
 
 ```php
-include (__DIR__.'/src/autoload.php');
-
 # Incluye tu arquivo de configuración (copia config.php para config.local.php)
 
 $config = require (__DIR__.'/config.local.php');
@@ -93,8 +95,6 @@ El proceso es exactamente igual que el anterior, sólamente se debe cambiar el v
 Una vez completado todo el proceso anterior, debemos crear dos scripts en nuestro proyecto, uno para iniciar la confirmación del pago y otro para verificar el proceso.
 
 ```php
-include (__DIR__.'/src/autoload.php');
-
 # Incluye tu arquivo de configuración (copia config.php para config.local.php)
 
 $config = require (__DIR__.'/config.local.php');
@@ -121,8 +121,6 @@ Para verificar que el envío se ha realizado correctamente, el banco devuelve un
 Ahora vamos a por el script de `http://dominio.com/direccion-control-pago-xml` en que recogemos el resultado del pago:
 
 ```php
-include (__DIR__.'/src/autoload.php');
-
 # Incluye tu arquivo de configuración (copia config.php para config.local.php)
 
 $config = require (__DIR__.'/config.local.php');
