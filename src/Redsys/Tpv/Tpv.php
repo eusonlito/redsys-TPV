@@ -269,11 +269,11 @@ class Tpv
     {
         if (empty($amount)) {
             return '000';
-        } elseif (preg_match('/[\.,]/', $amount)) {
-            return str_replace(array('.', ','), '', $amount);
-        } else {
-            return ($amount * 100);
         }
+        if (strpos($amount, ',') !== false) {
+            $amount = floatval(str_replace(',', '.', $amount));
+        }
+        return (round($amount, 2) * 100);
     }
 
     public function getSignature()
