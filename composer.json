@@ -13,6 +13,9 @@
         "php": ">=5.3",
         "redsys/messages": "1.*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "4.*"
+    },
     "autoload": {
         "psr-4": {
             "Redsys\\Tpv\\": "src/Redsys/Tpv/"
