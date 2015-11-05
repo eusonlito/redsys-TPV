@@ -39,6 +39,7 @@ class TpvTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('000', $tpv->getAmount(0.004));
         $this->assertEquals('001', $tpv->getAmount(0.006));
         $this->assertEquals('400', $tpv->getAmount('4€'));
+        $this->assertEquals('100050', $tpv->getAmount('1.000,50'));
     }
 
     /**

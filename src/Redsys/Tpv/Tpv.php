@@ -270,6 +270,11 @@ class Tpv
         if (empty($amount)) {
             return '000';
         }
+
+        if (preg_match('/[\d]+\.[\d]+,[\d]+/', $amount)) {
+            $amount = str_replace('.', '', $amount);
+        }
+
         if (strpos($amount, ',') !== false) {
             $amount = floatval(str_replace(',', '.', $amount));
         }
