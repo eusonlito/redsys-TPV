@@ -8,5 +8,6 @@ return array(
     'Currency' => '978',
     'MerchantName' => 'COMERCIO',
     'Titular' => 'Mi Comercio',
-    'ConsumerLanguage' => '001'
+    'ConsumerLanguage' => '001',
+    'SignatureVersion' => 'HMAC_SHA256_V1'
 );

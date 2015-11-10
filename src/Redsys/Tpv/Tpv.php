@@ -17,7 +17,7 @@ class Tpv
 
     private $option_prefix = 'Ds_Merchant_';
 
-    private $o_required = array('Environment', 'Currency', 'Terminal', 'ConsumerLanguage', 'MerchantCode', 'Key', 'MerchantName', 'Titular');
+    private $o_required = array('Environment', 'Currency', 'Terminal', 'ConsumerLanguage', 'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName', 'Titular');
     private $o_optional = array('UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods');
 
     private $environment = '';
@@ -27,7 +27,6 @@ class Tpv
     );
 
     private $values = array();
-    private $hidden = array();
 
     public function __construct(array $options)
     {
@@ -76,7 +75,6 @@ class Tpv
 
     public function setEnvironment($mode)
     {
-
         $this->environment = $this->getEnvironments($mode);
 
         return $this;
@@ -99,7 +97,7 @@ class Tpv
 
     public function setFormHiddens(array $options)
     {
-        $this->hidden = $this->values = array();
+        $this->values = array();
 
         if (isset($options['Order'])) {
             $options['Order'] = $this->getOrder($options['Order']);
@@ -126,33 +124,28 @@ class Tpv
         $this->setValue($options, 'ProductDescription');
         $this->setValue($options, 'Amount');
 
-        $options['MerchantSignature'] = $this->getSignature();
-
-        $this->setValue($options, 'MerchantSignature');
-
-        $this->setHiddensFromValues();
-
         return $this;
-    }
-
-    private function setHiddensFromValues()
-    {
-        return $this->hidden = $this->values;
     }
 
     public function getFormHiddens()
     {
-        if (empty($this->hidden)) {
+        if (empty($this->values)) {
             throw new Exception('Form fields must be initialized previously');
         }
 
-        $html = '';
+        return $this->getInputHidden('SignatureVersion', $this->options['SignatureVersion'])
+            .$this->getInputHidden('MerchantParameters', $this->getMerchantParameters())
+            .$this->getInputHidden('Signature', $this->getValuesSignature());
+    }
 
-        foreach ($this->hidden as $field => $value) {
-            $html .= "\n".'<input type="hidden" name="'.$field.'" value="'.$value.'" />';
-        }
+    private function getInputHidden($name, $value)
+    {
+        return "\n".'<input type="hidden" name="Ds_'.$name.'" value="'.$value.'" />';
+    }
 
-        return trim($html);
+    private function getMerchantParameters()
+    {
+        return base64_encode(json_encode($this->values));
     }
 
     public function sendXml(array $options)
@@ -176,25 +169,16 @@ class Tpv
         $this->setValueDefault($options, 'Order');
         $this->setValueDefault($options, 'Amount');
 
-        $this->setValue(array('MerchantURL' => ''), 'MerchantURL');
-
-        $options['MerchantSignature'] = $this->getSignature();
-
-        $this->setValueDefault($options, 'MerchantURL');
-        $this->setValueDefault($options, 'MerchantSignature');
-
-        $xml = $this->setXmlFromValues();
-
         $Curl = new Curl(array(
             'base' => $this->getPath('')
         ));
 
         $Curl->setHeader(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
-        return $Curl->post('/operaciones', array(), 'entrada='.$this->xmlArray2string($xml));
+        return $Curl->post('/operaciones', array(), 'entrada='.$this->xmlArray2string($this->setXmlValues()));
     }
 
-    private function setXmlFromValues()
+    private function setXmlValues()
     {
         $xml = array('DS_Version' => $this->options['Version']);
 
@@ -210,11 +194,17 @@ class Tpv
         $doc = new DOMDocument();
         $doc->formatOutput = true;
 
-        $root = $doc->createElement('DATOSENTRADA');
+        $data = $doc->createElement('DATOSENTRADA');
 
         foreach ($xml as $key => $value) {
-            $root->appendChild((new DOMElement($key, $value)));
+            $data->appendChild((new DOMElement($key, $value)));
         }
+
+        $root = $doc->createElement('REQUEST');
+
+        $root->appendChild(new DOMElement('DS_SIGNATUREVERSION', $this->options['SignatureVersion']));
+        $root->appendChild(new DOMElement('DS_SIGNATURE', $this->getValuesSignature()));
+        $root->appendChild($data);
 
         $doc->appendChild($root);
 
@@ -278,35 +268,30 @@ class Tpv
         if (strpos($amount, ',') !== false) {
             $amount = floatval(str_replace(',', '.', $amount));
         }
+
         return (round($amount, 2) * 100);
     }
 
-    public function getSignature()
+    public function getValuesSignature()
     {
-        $prefix = $this->option_prefix;
-        $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'TransactionType', 'MerchantURL');
-        $key = '';
-
-        foreach ($fields as $field) {
-            if (!isset($this->values[$prefix.$field])) {
-                throw new Exception(sprintf('Field <strong>%s</strong> is empty and is required to create signature key', $field));
-            }
-
-            $key .= $this->values[$prefix.$field];
-        }
-
-        return strtoupper(sha1($key.$this->options['Key']));
+        return Signature::fromValues($this->option_prefix, $this->values, $this->options['Key']);
     }
 
     public function checkTransaction(array $post)
     {
         $prefix = 'Ds_';
 
-        if (empty($post) || empty($post[$prefix.'Signature'])) {
+        if (empty($post) || empty($post[$prefix.'Signature']) || empty($post[$prefix.'MerchantParameters'])) {
             throw new Exception('_POST data is empty');
         }
 
-        $error = isset($post[$prefix.'ErrorCode']) ? $post[$prefix.'ErrorCode'] : null;
+        $data = $this->getTransactionParameters($post);
+
+        if (empty($data)) {
+            throw new Exception('_POST data can not be decoded');
+        }
+
+        $error = isset($data[$prefix.'ErrorCode']) ? $data[$prefix.'ErrorCode'] : null;
 
         if ($error) {
             if ($message = Messages::getByCode($error)) {
@@ -316,13 +301,13 @@ class Tpv
             }
         }
 
-        $response = isset($post[$prefix.'Response']) ? $post[$prefix.'Response'] : null;
+        $response = isset($data[$prefix.'Response']) ? $data[$prefix.'Response'] : null;
 
         if (is_null($response) || (strlen($response) === 0)) {
             throw new Exception('Response code is empty (no length)');
         }
 
-        if (((int)$response < 0) || ((int)$response > 99)) {
+        if (((int)$response < 0) || (((int)$response > 99) && ($response !== 900))) {
             if ($message = Messages::getByCode($response)) {
                 throw new Exception(sprintf('Response code is Transaction Denied %s: %s', $response, $message['message']));
             } else {
@@ -330,29 +315,17 @@ class Tpv
             }
         }
 
-        $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response');
-        $key = '';
-
-        foreach ($fields as $field) {
-            if (empty($post[$prefix.$field])) {
-                throw new Exception(sprintf('Field <strong>%s</strong> is empty and is required to verify transaction'));
-            }
-
-            $key .= $post[$prefix.$field];
-        }
-
-        $signature = strtoupper(sha1($key.$this->options['Key']));
+        $signature = Signature::fromTransaction($prefix, $data, $this->options['Key']);
 
         if ($signature !== $post[$prefix.'Signature']) {
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $post[$prefix.'Signature']));
         }
 
-        $response = (int) $post[$prefix.'Response'];
+        return array_merge($post, $data);
+    }
 
-        if (($response >= 100) && ($response !== 900)) {
-            throw new Exception(sprintf('Transaction error. Code: <strong>%s</strong>', $post[$prefix.'Response']));
-        }
-
-        return $post[$prefix.'Signature'];
+    private function getTransactionParameters(array $post)
+    {
+        return base64_decode(strtr($post, '-_', '+/'));
     }
 }

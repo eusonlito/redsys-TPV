@@ -94,17 +94,9 @@ class TpvTest extends PHPUnit_Framework_TestCase
         $fields = $tpv->getFormHiddens();
 
         $this->assertContains('<input', $fields);
-        $this->assertContains('Ds_Merchant_Currency', $fields);
-        $this->assertContains('Ds_Merchant_MerchantCode', $fields);
-        $this->assertContains('Ds_Merchant_Terminal', $fields);
-        $this->assertContains('Ds_Merchant_Titular', $fields);
-        $this->assertContains('Ds_Merchant_TransactionType', $fields);
-        $this->assertContains('Ds_Merchant_MerchantName', $fields);
-        $this->assertContains('Ds_Merchant_MerchantURL', $fields);
-        $this->assertContains('Ds_Merchant_ConsumerLanguage', $fields);
-        $this->assertContains('Ds_Merchant_Order', $fields);
-        $this->assertContains('Ds_Merchant_Amount', $fields);
-        $this->assertContains('Ds_Merchant_MerchantSignature', $fields);
+        $this->assertContains('Ds_SignatureVersion', $fields);
+        $this->assertContains('Ds_MerchantParameters', $fields);
+        $this->assertContains('Ds_Signature', $fields);
 
         return $tpv;
     }
