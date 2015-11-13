@@ -317,8 +317,10 @@ class Tpv
 
         $signature = Signature::fromTransaction($prefix, $data, $this->options['Key']);
 
-        if ($signature !== $post[$prefix.'Signature']) {
-            throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $post[$prefix.'Signature']));
+        $postSignature = strtr($post[$prefix.'Signature'], '-_', '+/');
+
+        if ($signature !== $postSignature) {
+            throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $postSignature));
         }
 
         return array_merge($post, $data);
@@ -326,6 +328,6 @@ class Tpv
 
     private function getTransactionParameters(array $post)
     {
-        return base64_decode(strtr($post, '-_', '+/'));
+        return json_decode(base64_decode(strtr($post['Ds_MerchantParameters'], '-_', '+/')), true);
     }
 }
