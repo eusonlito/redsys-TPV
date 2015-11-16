@@ -323,7 +323,7 @@ class Tpv
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $postSignature));
         }
 
-        return array_merge($post, $data);
+        return array_merge($post, array_map('urldecode', $data));
     }
 
     private function getTransactionParameters(array $post)
