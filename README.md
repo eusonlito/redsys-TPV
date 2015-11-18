@@ -63,10 +63,9 @@ $TPV = new Redsys\Tpv\Tpv($config);
 # Realizamos la comprobación de la transacción
 
 try {
-    $TPV->checkTransaction($_POST);
-} catch (\Exception $e) {
-    file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
-    die();
+    $datos = $TPV->checkTransaction($_POST);
+} catch (Exception $e) {
+    die(file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND));
 }
 
 # Actualización del registro en caso de pago (ejemplo usando mi framework)
@@ -75,11 +74,11 @@ $Db->update(array(
     'table' => 'tpv',
     'limit' => 1,
     'data' => array(
-        'operacion' => $_POST['Ds_TransactionType'],
+        'operacion' => $datos['Ds_TransactionType'],
         'fecha_pago' => date('Y-m-d H:i:s')
     ),
     'conditions' => array(
-        'id' => $_POST['Ds_Order']
+        'id' => $datos['Ds_Order']
     )
 ));
 
@@ -133,13 +132,16 @@ $TPV = new Redsys\Tpv\Tpv($config);
 
 $datos = $TPV->xmlString2array($_POST['datos']);
 
+if ((int)$datos['CODIGO'] !== 0) {
+    die(file_put_contents(__DIR__.'/logs/errores-tpv.log', 'El código de operación ha devuelto el error '.$datos['CODIGO'], FILE_APPEND));
+}
+
 # Realizamos la comprobación de la transacción
 
 try {
-    $TPV->checkTransaction($datos);
-} catch (\Exception $e) {
-    file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
-    die();
+    $datos = $TPV->checkTransaction($datos['OPERACION']);
+} catch (Exception $e) {
+    die(file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND));
 }
 
 # Actualización del registro en caso de pago (ejemplo usando mi framework)
