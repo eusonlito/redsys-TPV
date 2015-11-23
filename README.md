@@ -104,7 +104,7 @@ $TPV = new Redsys\Tpv\Tpv($config);
 
 # Indicamos los campos para la confirmación del pago
 
-$TPV->sendXml(array(
+$response = $TPV->sendXml(array(
     'TransactionType' => '2', // Código para la Confirmación del cargo
     'MerchantURL' => 'http://dominio.com/direccion-control-pago-xml', // A esta URL enviará el banco la confirmación del cobro
     'Amount' => '568,25', // La cantidad final a cobrar
@@ -128,18 +128,10 @@ $config = require (__DIR__.'/config.local.php');
 
 $TPV = new Redsys\Tpv\Tpv($config);
 
-# Obtenemos los datos remitidos por el banco en formato `array`
-
-$datos = $TPV->xmlString2array($_POST['datos']);
-
-if ((int)$datos['CODIGO'] !== 0) {
-    die(file_put_contents(__DIR__.'/logs/errores-tpv.log', 'El código de operación ha devuelto el error '.$datos['CODIGO'], FILE_APPEND));
-}
-
 # Realizamos la comprobación de la transacción
 
 try {
-    $datos = $TPV->checkTransaction($datos['OPERACION']);
+    $datos = $TPV->checkTransaction($_POST);
 } catch (Exception $e) {
     die(file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND));
 }
