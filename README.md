@@ -5,7 +5,7 @@ Este script te permitirá generar los formularios para la integración de la pas
 
 ## Instalación
 
-Añade las dependencias vía composer: `"redsys/tpv": "1.*"`
+Añade las dependencias vía composer: `"redsys/tpv": "2.*"`
 
 ```bash
 composer update
