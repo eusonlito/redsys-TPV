@@ -1,6 +1,5 @@
 <?php
-spl_autoload_register(function ($className)
-{
+spl_autoload_register(function ($className) {
     if (strpos($className, 'Redsys\\Tpv') !== 0) {
         return;
     }

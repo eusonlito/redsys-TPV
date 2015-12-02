@@ -131,7 +131,7 @@ $TPV = new Redsys\Tpv\Tpv($config);
 # Realizamos la comprobación de la transacción
 
 try {
-    $datos = $TPV->checkTransaction($_POST);
+    $datos = $TPV->checkTransactionXml($_POST);
 } catch (Exception $e) {
     die(file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND));
 }

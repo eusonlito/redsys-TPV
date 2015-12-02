@@ -1,7 +1,9 @@
 <?php
 namespace Redsys\Tpv;
 
-use DOMDocument, DOMXPath, Exception;
+use DOMDocument;
+use DOMXPath;
+use Exception;
 
 class Curl
 {

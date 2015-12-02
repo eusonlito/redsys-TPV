@@ -2,7 +2,8 @@
 namespace Redsys\Tpv;
 
 use Exception;
-use DOMDocument, DOMElement;
+use DOMDocument;
+use DOMElement;
 use Redsys\Messages\Messages;
 
 class Tpv
@@ -152,22 +153,17 @@ class Tpv
     {
         $this->values = array();
 
-        if (isset($options['Order'])) {
-            $options['Order'] = $this->getOrder($options['Order']);
-        }
-
-        if (isset($options['Amount'])) {
-            $options['Amount'] = $this->getAmount($options['Amount']);
-        }
+        $options['Order'] = $this->getOrder($options['Order']);
+        $options['Amount'] = $this->getAmount($options['Amount']);
 
         $this->setValueDefault($options, 'MerchantCode');
-        $this->setValueDefault($options, 'MerchantName');
-        $this->setValueDefault($options, 'MerchantData');
+        $this->setValueDefault($options, 'MerchantURL');
         $this->setValueDefault($options, 'Currency');
         $this->setValueDefault($options, 'Terminal');
-        $this->setValueDefault($options, 'TransactionType');
-        $this->setValueDefault($options, 'Order');
-        $this->setValueDefault($options, 'Amount');
+
+        $this->setValue($options, 'TransactionType');
+        $this->setValue($options, 'Order');
+        $this->setValue($options, 'Amount');
 
         $Curl = new Curl(array(
             'base' => $this->getPath('')
@@ -175,7 +171,9 @@ class Tpv
 
         $Curl->setHeader(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
-        return $Curl->post('/operaciones', array(), 'entrada='.$this->xmlArray2string($this->setXmlValues()));
+        return $Curl->post('/operaciones', array(
+            'entrada' => $this->xmlArray2string($this->setXmlValues())
+        ));
     }
 
     private function setXmlValues()
@@ -192,19 +190,18 @@ class Tpv
     private function xmlArray2string($xml)
     {
         $doc = new DOMDocument();
-        $doc->formatOutput = true;
 
         $data = $doc->createElement('DATOSENTRADA');
 
         foreach ($xml as $key => $value) {
-            $data->appendChild((new DOMElement($key, $value)));
+            $data->appendChild((new DOMElement(strtoupper($key), $value)));
         }
 
         $root = $doc->createElement('REQUEST');
 
-        $root->appendChild(new DOMElement('DS_SIGNATUREVERSION', $this->options['SignatureVersion']));
-        $root->appendChild(new DOMElement('DS_SIGNATURE', $this->getValuesSignature()));
         $root->appendChild($data);
+        $root->appendChild(new DOMElement('DS_SIGNATUREVERSION', $this->options['SignatureVersion']));
+        $root->appendChild(new DOMElement('DS_SIGNATURE', Signature::fromXML((string)$doc->saveXML($data), $this->options['Key'])));
 
         $doc->appendChild($root);
 
@@ -214,6 +211,31 @@ class Tpv
     public function xmlString2array($xml)
     {
         return json_decode(json_encode(simplexml_load_string($xml)), true);
+    }
+
+    public function checkTransactionXml(array $post)
+    {
+        $prefix = 'Ds_';
+
+        if (empty($post) || empty($post[$prefix.'Signature']) || empty($post[$prefix.'MerchantParameters'])) {
+            throw new Exception('_POST data is empty');
+        }
+
+        $data = $this->getTransactionParameters($post);
+        $data = $this->xmlString2array($data['datos']);
+
+        if (empty($data)) {
+            throw new Exception('_POST data can not be decoded');
+        }
+
+        $this->checkTransactionError($data, $prefix);
+        $this->checkTransactionResponse($data, $prefix);
+
+        $signature = Signature::fromTransactionXml($prefix, $data, $this->options['Key']);
+
+        $this->checkTransactionSignature($signature, $post[$prefix.'Signature']);
+
+        return array_merge($post, $data);
     }
 
     private function setValueDefault(array $options, $option)
@@ -291,16 +313,33 @@ class Tpv
             throw new Exception('_POST data can not be decoded');
         }
 
+        $this->checkTransactionError($data, $prefix);
+        $this->checkTransactionResponse($data, $prefix);
+
+        $signature = Signature::fromTransaction($prefix, $data, $this->options['Key']);
+
+        $this->checkTransactionSignature($signature, $post[$prefix.'Signature']);
+
+        return array_merge($post, array_map('urldecode', $data));
+    }
+
+    private function checkTransactionError(array $data, $prefix)
+    {
         $error = isset($data[$prefix.'ErrorCode']) ? $data[$prefix.'ErrorCode'] : null;
 
-        if ($error) {
-            if ($message = Messages::getByCode($error)) {
-                throw new Exception(sprintf('TPV returned error code %s: %s', $error, $message['message']));
-            } else {
-                throw new Exception(sprintf('TPV returned unknown error code %s', $error));
-            }
+        if (empty($error)) {
+            return null;
         }
 
+        if ($message = Messages::getByCode($error)) {
+            throw new Exception(sprintf('TPV returned error code %s: %s', $error, $message['message']));
+        } else {
+            throw new Exception(sprintf('TPV returned unknown error code %s', $error));
+        }
+    }
+
+    private function checkTransactionResponse(array $data, $prefix)
+    {
         $response = isset($data[$prefix.'Response']) ? $data[$prefix.'Response'] : null;
 
         if (is_null($response) || (strlen($response) === 0)) {
@@ -314,19 +353,18 @@ class Tpv
                 throw new Exception(sprintf('Response code is unknown %s', $response));
             }
         }
+    }
 
-        $signature = Signature::fromTransaction($prefix, $data, $this->options['Key']);
-
-        $postSignature = strtr($post[$prefix.'Signature'], '-_', '+/');
+    private function checkTransactionSignature($signature, $postSignature)
+    {
+        $postSignature = strtr($postSignature, '-_', '+/');
 
         if ($signature !== $postSignature) {
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $postSignature));
         }
-
-        return array_merge($post, array_map('urldecode', $data));
     }
 
-    private function getTransactionParameters(array $post)
+    public function getTransactionParameters(array $post)
     {
         return json_decode(base64_decode(strtr($post['Ds_MerchantParameters'], '-_', '+/')), true);
     }

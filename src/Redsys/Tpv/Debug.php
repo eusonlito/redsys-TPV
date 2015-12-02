@@ -19,7 +19,9 @@ class Debug
         }
 
         echo '<code><strong>['.$last['line'].'] '.$row.'</strong></code>';
-        echo '<pre>'; var_dump($info); echo '</pre>';
+        echo '<pre>';
+        var_dump($info);
+        echo '</pre>';
     }
 
     public static function dd($info, $title = '')
