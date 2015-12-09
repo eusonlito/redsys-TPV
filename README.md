@@ -66,6 +66,7 @@ try {
     $datos = $TPV->checkTransaction($_POST);
 } catch (Exception $e) {
     file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
+    file_put_contents(__DIR__.'/logs/errores-tpv.log', var_export($_POST, true), FILE_APPEND);
     file_put_contents(__DIR__.'/logs/errores-tpv.log', var_export($TPV->getTransactionParameters($_POST), true), FILE_APPEND);
     die();
 }
