@@ -65,7 +65,9 @@ $TPV = new Redsys\Tpv\Tpv($config);
 try {
     $datos = $TPV->checkTransaction($_POST);
 } catch (Exception $e) {
-    die(file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND));
+    file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
+    file_put_contents(__DIR__.'/logs/errores-tpv.log', var_export($TPV->getTransactionParameters($_POST), true), FILE_APPEND);
+    die();
 }
 
 # Actualización del registro en caso de pago (ejemplo usando mi framework)
