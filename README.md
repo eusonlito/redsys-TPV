@@ -64,11 +64,12 @@ $TPV = new Redsys\Tpv\Tpv($config);
 
 try {
     $datos = $TPV->checkTransaction($_POST);
+    $success = true;
+    $message = '';
 } catch (Exception $e) {
-    file_put_contents(__DIR__.'/logs/errores-tpv.log', $e->getMessage(), FILE_APPEND);
-    file_put_contents(__DIR__.'/logs/errores-tpv.log', var_export($_POST, true), FILE_APPEND);
-    file_put_contents(__DIR__.'/logs/errores-tpv.log', var_export($TPV->getTransactionParameters($_POST), true), FILE_APPEND);
-    die();
+    $datos = $TPV->getTransactionParameters($_POST);
+    $success = false;
+    $message = $e->getMessage();
 }
 
 # Actualización del registro en caso de pago (ejemplo usando mi framework)
@@ -77,8 +78,12 @@ $Db->update(array(
     'table' => 'tpv',
     'limit' => 1,
     'data' => array(
+        'pagado' => $success,
+        'mensaje' => $message,
         'operacion' => $datos['Ds_TransactionType'],
-        'fecha_pago' => date('Y-m-d H:i:s')
+        'fecha_pago' => date('Y-m-d H:i:s'),
+        'variables' => json_encode($datos),
+        'post' => json_encode($_POST)
     ),
     'conditions' => array(
         'id' => $datos['Ds_Order']
