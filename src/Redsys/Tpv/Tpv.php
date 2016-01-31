@@ -263,7 +263,7 @@ class Tpv
     public function getOrder($order)
     {
         if (preg_match('/^[0-9]+$/', $order)) {
-            $order = sprintf('%012d', $order);
+            $order = sprintf('%012s', $order);
         }
 
         $len = strlen($order);
