@@ -164,23 +164,4 @@ die();
 
 --------
 
-# Integración con Redsys/Fake
-
-Si deseas probar la conexión con un servidor propio de Redsys, puedes instalar el siguiente servicio en tu servidor https://github.com/eusonlito/redsys-Fake
-
-La configuración para conexión a este servicio sería la siguiente
-
-```php
-$TPV = new Redsys\Tpv\Tpv(array(
-    'environments' => array(
-        'local' => 'http://redsys-fake.mydomain.com'
-    ),
-
-    'Environment' => 'local',
-    'Key' => 'asdfghjkd0123456789', // Debe coincidir con el valor de Key del entorno de pruebas
-
-    ....
-));
-```
-
 Si deseas más información sobre parámetros u opciones, Google puede echarte una mano https://www.google.es/search?q=manual+instalaci%C3%B3n+redsys+php+filetype%3Apdf
