@@ -228,10 +228,14 @@ class Tpv
             throw new Exception('_POST data can not be decoded');
         }
 
+        if (empty($data[$prefix.'Order'])) {
+            throw new Exception('Order not found');
+        }
+
         $this->checkTransactionError($data, $prefix);
         $this->checkTransactionResponse($data, $prefix);
 
-        $signature = Signature::fromTransactionXml($prefix, $data, $this->options['Key']);
+        $signature = Signature::fromTransactionXML($post[$prefix.'MerchantParameters'], $data[$prefix.'Order'], $this->options['Key']);
 
         $this->checkTransactionSignature($signature, $post[$prefix.'Signature']);
 
@@ -357,9 +361,7 @@ class Tpv
 
     private function checkTransactionSignature($signature, $postSignature)
     {
-        $postSignature = strtr($postSignature, '-_', '+/');
-
-        if ($signature !== $postSignature) {
+        if ($signature !== strtr($postSignature, '-_', '+/')) {
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $postSignature));
         }
     }
