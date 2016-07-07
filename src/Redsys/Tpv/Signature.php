@@ -19,11 +19,9 @@ class Signature
         return self::calculate($prefix, $fields, $values, $key);
     }
 
-    public static function fromTransactionXML($prefix, array $values, $key)
+    public static function fromTransactionXML($parameters, $order, $key)
     {
-        $fields = array('Amount', 'Order', 'MerchantCode', 'Currency', 'Response', 'TransactionType', 'SecurePayment');
-
-        return self::calculate($prefix, $fields, $values, $key);
+        return self::MAC256($parameters, self::encryptKey($order, $key));
     }
 
     public static function fromXML($xml, $key)
