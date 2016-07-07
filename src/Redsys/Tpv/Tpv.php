@@ -119,11 +119,15 @@ class Tpv
         $this->setValueDefault($options, 'UrlOK');
         $this->setValueDefault($options, 'UrlKO');
         $this->setValueDefault($options, 'PayMethods');
+        $this->setValueDefault($options, 'Identifier');
 
         $this->setValue($options, 'MerchantData');
         $this->setValue($options, 'Order');
         $this->setValue($options, 'ProductDescription');
         $this->setValue($options, 'Amount');
+        $this->setValue($options, 'SumTotal');
+        $this->setValue($options, 'DateFrecuency');
+        $this->setValue($options, 'ChargeExpiryDate');
 
         return $this;
     }
