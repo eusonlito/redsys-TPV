@@ -49,7 +49,11 @@ class Curl
 
         curl_setopt($this->connect, CURLOPT_HEADER, false);
         curl_setopt($this->connect, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($this->connect, CURLOPT_FOLLOWLOCATION, true);
+
+        if (!ini_get('open_basedir') && !filter_var(ini_get('safe_mode'), FILTER_VALIDATE_BOOLEAN)) {
+            curl_setopt($this->connect, CURLOPT_FOLLOWLOCATION, true);
+        }
+
         curl_setopt($this->connect, CURLOPT_AUTOREFERER, true);
         curl_setopt($this->connect, CURLOPT_COOKIEJAR, $this->settings['cookie']);
         curl_setopt($this->connect, CURLOPT_COOKIEFILE, $this->settings['cookie']);
