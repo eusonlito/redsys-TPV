@@ -164,6 +164,8 @@ class Tpv
         $this->setValueDefault($options, 'MerchantURL');
         $this->setValueDefault($options, 'Currency');
         $this->setValueDefault($options, 'Terminal');
+        $this->setValueDefault($options, 'Identifier');
+        $this->setValueDefault($options, 'DirectPayment');
 
         $this->setValue($options, 'TransactionType');
         $this->setValue($options, 'Order');
@@ -198,6 +200,10 @@ class Tpv
         $data = $doc->createElement('DATOSENTRADA');
 
         foreach ($xml as $key => $value) {
+            if ((strpos($value, '?') !== false) && (strpos($value, '&') !== false) && (strpos($value, '&amp;') !== false)) {
+                $value = str_replace('&', '&amp;', $value);
+            }
+
             $data->appendChild((new DOMElement(strtoupper($key), $value)));
         }
 
