@@ -200,7 +200,7 @@ class Tpv
         $data = $doc->createElement('DATOSENTRADA');
 
         foreach ($xml as $key => $value) {
-            if ((strpos($value, '?') !== false) && (strpos($value, '&') !== false) && (strpos($value, '&amp;') !== false)) {
+            if ((strpos($value, '?') !== false) && (strpos($value, '&') !== false) && (strpos($value, '&amp;') === false)) {
                 $value = str_replace('&', '&amp;', $value);
             }
 
