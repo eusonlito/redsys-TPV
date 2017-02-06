@@ -50,9 +50,10 @@ class Signature
 
     private static function encrypt3DES($message, $key)
     {
-        $iv = implode(array_map('chr', array(0, 0, 0, 0, 0, 0, 0, 0)));
+        $l = ceil(strlen($message) / 8) * 8;
+        $message = $message.str_repeat("\0", $l - strlen($message));
 
-        return mcrypt_encrypt(MCRYPT_3DES, $key, $message, MCRYPT_MODE_CBC, $iv);
+        return substr(openssl_encrypt($message, 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, "\0\0\0\0\0\0\0\0"), 0, $l);
     }
 
     private static function encryptKey($order, $key)
