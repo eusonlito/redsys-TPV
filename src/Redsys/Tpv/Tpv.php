@@ -121,13 +121,7 @@ class Tpv
         $this->setValueDefault($options, 'PayMethods');
         $this->setValueDefault($options, 'Identifier');
 
-        $this->setValue($options, 'MerchantData');
-        $this->setValue($options, 'Order');
-        $this->setValue($options, 'ProductDescription');
-        $this->setValue($options, 'Amount');
-        $this->setValue($options, 'SumTotal');
-        $this->setValue($options, 'DateFrecuency');
-        $this->setValue($options, 'ChargeExpiryDate');
+        $this->setValues($options);
 
         return $this;
     }
@@ -167,9 +161,7 @@ class Tpv
         $this->setValueDefault($options, 'Identifier');
         $this->setValueDefault($options, 'DirectPayment');
 
-        $this->setValue($options, 'TransactionType');
-        $this->setValue($options, 'Order');
-        $this->setValue($options, 'Amount');
+        $this->setValues($options);
 
         $Curl = new Curl(array(
             'base' => $this->getPath('')
@@ -269,6 +261,19 @@ class Tpv
     {
         if (isset($options[$option])) {
             $this->values[$this->option_prefix.$option] = $options[$option];
+        }
+
+        return $this;
+    }
+
+    private function setValues(array $options)
+    {
+        foreach ($options as $key => $value) {
+            $key = $this->option_prefix.$key;
+
+            if (!isset($this->values[$key])) {
+                $this->values[$key] = $value;
+            }
         }
 
         return $this;
