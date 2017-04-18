@@ -133,18 +133,23 @@ class Tpv
         }
 
         return $this->getInputHidden('SignatureVersion', $this->options['SignatureVersion'])
-            .$this->getInputHidden('MerchantParameters', $this->getMerchantParameters())
+            .$this->getInputHidden('MerchantParameters', $this->getMerchantParametersEncoded())
             .$this->getInputHidden('Signature', $this->getValuesSignature());
     }
 
-    private function getInputHidden($name, $value)
+    public function getInputHidden($name, $value)
     {
         return "\n".'<input type="hidden" name="Ds_'.$name.'" value="'.$value.'" />';
     }
 
-    private function getMerchantParameters()
+    public function getMerchantParameters()
     {
-        return base64_encode(json_encode($this->values));
+        return $this->values;
+    }
+
+    public function getMerchantParametersEncoded()
+    {
+        return base64_encode(json_encode($this->getMerchantParameters()));
     }
 
     public function sendXml(array $options)
