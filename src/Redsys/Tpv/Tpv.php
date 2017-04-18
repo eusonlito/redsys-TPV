@@ -121,13 +121,7 @@ class Tpv
         $this->setValueDefault($options, 'PayMethods');
         $this->setValueDefault($options, 'Identifier');
 
-        $this->setValue($options, 'MerchantData');
-        $this->setValue($options, 'Order');
-        $this->setValue($options, 'ProductDescription');
-        $this->setValue($options, 'Amount');
-        $this->setValue($options, 'SumTotal');
-        $this->setValue($options, 'DateFrecuency');
-        $this->setValue($options, 'ChargeExpiryDate');
+        $this->setValues($options);
 
         return $this;
     }
@@ -139,18 +133,23 @@ class Tpv
         }
 
         return $this->getInputHidden('SignatureVersion', $this->options['SignatureVersion'])
-            .$this->getInputHidden('MerchantParameters', $this->getMerchantParameters())
+            .$this->getInputHidden('MerchantParameters', $this->getMerchantParametersEncoded())
             .$this->getInputHidden('Signature', $this->getValuesSignature());
     }
 
-    private function getInputHidden($name, $value)
+    public function getInputHidden($name, $value)
     {
         return "\n".'<input type="hidden" name="Ds_'.$name.'" value="'.$value.'" />';
     }
 
-    private function getMerchantParameters()
+    public function getMerchantParameters()
     {
-        return base64_encode(json_encode($this->values));
+        return $this->values;
+    }
+
+    public function getMerchantParametersEncoded()
+    {
+        return base64_encode(json_encode($this->getMerchantParameters()));
     }
 
     public function sendXml(array $options)
@@ -167,9 +166,7 @@ class Tpv
         $this->setValueDefault($options, 'Identifier');
         $this->setValueDefault($options, 'DirectPayment');
 
-        $this->setValue($options, 'TransactionType');
-        $this->setValue($options, 'Order');
-        $this->setValue($options, 'Amount');
+        $this->setValues($options);
 
         $Curl = new Curl(array(
             'base' => $this->getPath('')
@@ -269,6 +266,19 @@ class Tpv
     {
         if (isset($options[$option])) {
             $this->values[$this->option_prefix.$option] = $options[$option];
+        }
+
+        return $this;
+    }
+
+    private function setValues(array $options)
+    {
+        foreach ($options as $key => $value) {
+            $key = $this->option_prefix.$key;
+
+            if (!isset($this->values[$key])) {
+                $this->values[$key] = $value;
+            }
         }
 
         return $this;
