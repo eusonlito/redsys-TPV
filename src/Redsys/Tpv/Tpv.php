@@ -262,15 +262,6 @@ class Tpv
         return $this;
     }
 
-    private function setValue(array $options, $option)
-    {
-        if (isset($options[$option])) {
-            $this->values[$this->option_prefix.$option] = $options[$option];
-        }
-
-        return $this;
-    }
-
     private function setValues(array $options)
     {
         foreach ($options as $key => $value) {
