@@ -370,7 +370,9 @@ class Tpv
             throw new Exception('Response code is empty (no length)');
         }
 
-        if (((int)$response < 0) || (((int)$response > 99) && ($response !== 900))) {
+        $value = (int)$response;
+
+        if (($value < 0) || (($value > 99) && ($value !== 900))) {
             if ($message = Messages::getByCode($response)) {
                 throw new Exception(sprintf('Response code is Transaction Denied %s: %s', $response, $message['message']));
             } else {
