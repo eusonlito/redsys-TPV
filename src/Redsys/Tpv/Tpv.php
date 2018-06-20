@@ -340,16 +340,8 @@ class Tpv
 
     private function checkTransactionError(array $data, $prefix)
     {
-        $error = isset($data[$prefix.'ErrorCode']) ? $data[$prefix.'ErrorCode'] : null;
-
-        if (empty($error)) {
-            return null;
-        }
-
-        if ($message = Messages::getByCode($error)) {
-            throw new Exception(sprintf('TPV returned error code %s: %s', $error, $message['message']));
-        } else {
-            throw new Exception(sprintf('TPV returned unknown error code %s', $error));
+        if ($error = (isset($data[$prefix.'ErrorCode']) ? $data[$prefix.'ErrorCode'] : false)) {
+            throw new Exception(Messages::getByCode($error) ?: '', (int)$error);
         }
     }
 
@@ -364,11 +356,7 @@ class Tpv
         $value = (int)$response;
 
         if (($value < 0) || (($value > 99) && ($value !== 900))) {
-            if ($message = Messages::getByCode($response)) {
-                throw new Exception(sprintf('Response code is Transaction Denied %s: %s', $response, $message['message']));
-            } else {
-                throw new Exception(sprintf('Response code is unknown %s', $response));
-            }
+            throw new Exception(Messages::getByCode($response) ?: '', $value);
         }
     }
 
