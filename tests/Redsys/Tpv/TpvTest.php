@@ -11,9 +11,8 @@ class TpvTest extends PHPUnit_Framework_TestCase
 {
     public function testInstance()
     {
-        $config = require (realpath(__DIR__.'/../../..').'/config.php');
+        $tpv = new Tpv(require (__DIR__.'/../../../config.php'));
 
-        $tpv = new Tpv($config);
         $this->assertInstanceOf('Redsys\Tpv\Tpv', $tpv);
 
         return $tpv;

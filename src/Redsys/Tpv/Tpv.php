@@ -8,7 +8,7 @@ use Redsys\Messages\Messages;
 
 class Tpv
 {
-    private $options = array(
+    protected $options = array(
         'Version' => '0.1',
         'Environment' => 'test',
         'Currency' => '978',
@@ -16,18 +16,24 @@ class Tpv
         'ConsumerLanguage' => '001'
     );
 
-    private $option_prefix = 'Ds_Merchant_';
+    protected $option_prefix = 'Ds_Merchant_';
 
-    private $o_required = array('Environment', 'Currency', 'Terminal', 'ConsumerLanguage', 'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName', 'Titular');
-    private $o_optional = array('UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods');
+    protected $o_required = array(
+        'Environment', 'Currency', 'Terminal', 'ConsumerLanguage',
+        'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName', 'Titular'
+    );
 
-    private $environment = '';
-    private $environments = array(
+    protected $o_optional = array(
+        'UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods'
+    );
+
+    protected $environment = '';
+    protected $environments = array(
         'test' => 'https://sis-t.redsys.es:25443/sis',
         'real' => 'https://sis.redsys.es/sis'
     );
 
-    private $values = array();
+    protected $values = array();
 
     public function __construct(array $options)
     {
@@ -179,7 +185,7 @@ class Tpv
         ));
     }
 
-    private function setXmlValues()
+    protected function setXmlValues()
     {
         $xml = array('DS_Version' => $this->options['Version']);
 
@@ -190,7 +196,7 @@ class Tpv
         return $xml;
     }
 
-    private function xmlArray2string($xml)
+    protected function xmlArray2string($xml)
     {
         $doc = new DOMDocument();
 
@@ -249,7 +255,7 @@ class Tpv
         return array_merge($post, $data);
     }
 
-    private function setValueDefault(array $options, $option)
+    protected function setValueDefault(array $options, $option)
     {
         $code = $this->option_prefix.$option;
 
@@ -262,7 +268,7 @@ class Tpv
         return $this;
     }
 
-    private function setValues(array $options)
+    protected function setValues(array $options)
     {
         foreach ($options as $key => $value) {
             $key = $this->option_prefix.$key;
@@ -338,14 +344,19 @@ class Tpv
         return array_merge($post, array_map('urldecode', $data));
     }
 
-    private function checkTransactionError(array $data, $prefix)
+    public function getTransactionParameters(array $post)
+    {
+        return json_decode(base64_decode(strtr($post['Ds_MerchantParameters'], '-_', '+/')), true);
+    }
+
+    protected function checkTransactionError(array $data, $prefix)
     {
         if ($error = (isset($data[$prefix.'ErrorCode']) ? $data[$prefix.'ErrorCode'] : false)) {
-            throw new Exception(Messages::getByCode($error) ?: '', (int)$error);
+            $this->throwErrorByCode($error);
         }
     }
 
-    private function checkTransactionResponse(array $data, $prefix)
+    protected function checkTransactionResponse(array $data, $prefix)
     {
         $response = isset($data[$prefix.'Response']) ? $data[$prefix.'Response'] : null;
 
@@ -356,19 +367,21 @@ class Tpv
         $value = (int)$response;
 
         if (($value < 0) || (($value > 99) && ($value !== 900))) {
-            throw new Exception(Messages::getByCode($response) ?: '', $value);
+            $this->throwErrorByCode($response);
         }
     }
 
-    private function checkTransactionSignature($signature, $postSignature)
+    protected function checkTransactionSignature($signature, $postSignature)
     {
         if ($signature !== strtr($postSignature, '-_', '+/')) {
             throw new Exception(sprintf('Signature not valid (%s != %s)', $signature, $postSignature));
         }
     }
 
-    public function getTransactionParameters(array $post)
+    protected function throwErrorByCode($code)
     {
-        return json_decode(base64_decode(strtr($post['Ds_MerchantParameters'], '-_', '+/')), true);
+        $message = Messages::getByCode($code);
+
+        throw new Exception($message ? $message['message'] : '', (int)$code);
     }
 }
