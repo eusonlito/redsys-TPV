@@ -7,11 +7,11 @@ use Exception;
 
 class Curl
 {
-    private $settings = array();
+    protected $settings = array();
 
-    private $connect;
-    private $html;
-    private $info;
+    protected $connect;
+    protected $html;
+    protected $info;
 
     public function __construct(array $settings)
     {
@@ -129,6 +129,7 @@ class Curl
         }
 
         $base = parse_url($this->info['url']);
+
         $this->settings['base'] = $base['scheme'].'://'.$base['host'];
     }
 
