@@ -20,11 +20,11 @@ class Tpv
 
     protected $o_required = array(
         'Environment', 'Currency', 'Terminal', 'ConsumerLanguage',
-        'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName', 'Titular'
+        'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName'
     );
 
     protected $o_optional = array(
-        'UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods'
+        'UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods', 'Titular'
     );
 
     protected $environment = '';
