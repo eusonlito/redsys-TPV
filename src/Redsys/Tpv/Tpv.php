@@ -312,7 +312,7 @@ class Tpv
             $amount = floatval(str_replace(',', '.', $amount));
         }
 
-        return (round($amount, 2) * 100);
+        return intval(round($amount, 2) * 100);
     }
 
     public function getValuesSignature()
