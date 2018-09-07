@@ -328,8 +328,10 @@ class Tpv
             $amount = substr($amount, 0, $point + 1 + 2);
         }
 
-        // Set as Redsys valid amount value: 12,34 = 1234
-        return ($amount * 100);
+        // Set as Redsys valid amount value: 12.34 = 1234
+        // Avoid to use intval, round or sprintf without remove decimals before
+        // because this functions applies a round.
+        return sprintf('%03d', preg_replace('/\.[0-9]+$/', '', $amount * 100));
     }
 
     public function getValuesSignature()
