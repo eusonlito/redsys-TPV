@@ -1,13 +1,13 @@
 <?php
 namespace Redsys\Tpv;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Exception;
 
 /**
  * Test Tpv
  */
-class TpvTest extends PHPUnit_Framework_TestCase
+class TpvTest extends TestCase
 {
     public function testInstance()
     {
@@ -33,12 +33,22 @@ class TpvTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('410', $tpv->getAmount('4.10'));
         $this->assertEquals('410', $tpv->getAmount('4.1'));
         $this->assertEquals('410', $tpv->getAmount('4,1'));
+        $this->assertEquals('499', $tpv->getAmount('4,99'));
+        $this->assertEquals('499', $tpv->getAmount('4.99'));
+        $this->assertEquals('499', $tpv->getAmount('4.999'));
+        $this->assertEquals('499', $tpv->getAmount('4,999'));
         $this->assertEquals('040', $tpv->getAmount(0.4));
         $this->assertEquals('004', $tpv->getAmount(0.04));
         $this->assertEquals('000', $tpv->getAmount(0.004));
-        $this->assertEquals('001', $tpv->getAmount(0.006));
+        $this->assertEquals('000', $tpv->getAmount(0.009));
         $this->assertEquals('400', $tpv->getAmount('4€'));
+        $this->assertEquals('589', $tpv->getAmount('5,89€'));
+        $this->assertEquals('589', $tpv->getAmount('$5.89'));
+
+        $this->assertEquals('100050', $tpv->getAmount('1000,50'));
         $this->assertEquals('100050', $tpv->getAmount('1.000,50'));
+        $this->assertEquals('100050', $tpv->getAmount('1,000.50'));
+        $this->assertEquals('999999', $tpv->getAmount('9999,9999'));
     }
 
     /**
