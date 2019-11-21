@@ -137,7 +137,7 @@ class Tpv
         $hiddens = '';
 
         foreach ($this->getFormValues() as $key => $value) {
-            $hiddens .= $this->getInputHidden($key, $value);
+            $hiddens .= $this->getInputHidden($key, $value, false);
         }
 
         return $hiddens;
@@ -150,15 +150,15 @@ class Tpv
         }
 
         return array(
-            'SignatureVersion' => $this->options['SignatureVersion'],
-            'MerchantParameters' => $this->getMerchantParametersEncoded(),
-            'Signature' => $this->getValuesSignature()
+            'Ds_SignatureVersion' => $this->options['SignatureVersion'],
+            'Ds_MerchantParameters' => $this->getMerchantParametersEncoded(),
+            'Ds_Signature' => $this->getValuesSignature()
         );
     }
 
-    public function getInputHidden($name, $value)
+    public function getInputHidden($name, $value, $prefix = true)
     {
-        return "\n".'<input type="hidden" name="Ds_'.$name.'" value="'.$value.'" />';
+        return "\n".'<input type="hidden" name="'.($prefix ? 'Ds_' : '').$name.'" value="'.$value.'" />';
     }
 
     public function getMerchantParameters()
