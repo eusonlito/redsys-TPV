@@ -100,6 +100,10 @@ class TpvTest extends TestCase
             'MerchantURL' => 'http://example.com',
         ]);
 
+        $values = $tpv->getFormValues();
+
+        $this->assertTrue(count($values) === count(array_filter($values)));
+
         $fields = $tpv->getFormHiddens();
 
         $this->assertContains('<input', $fields);

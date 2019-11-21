@@ -134,13 +134,26 @@ class Tpv
 
     public function getFormHiddens()
     {
+        $hiddens = '';
+
+        foreach ($this->getFormValues() as $key => $value) {
+            $hiddens .= $this->getInputHidden($key, $value);
+        }
+
+        return $hiddens;
+    }
+
+    public function getFormValues()
+    {
         if (empty($this->values)) {
             throw new Exception('Form fields must be initialized previously');
         }
 
-        return $this->getInputHidden('SignatureVersion', $this->options['SignatureVersion'])
-            .$this->getInputHidden('MerchantParameters', $this->getMerchantParametersEncoded())
-            .$this->getInputHidden('Signature', $this->getValuesSignature());
+        return array(
+            'SignatureVersion' => $this->options['SignatureVersion'],
+            'MerchantParameters' => $this->getMerchantParametersEncoded(),
+            'Signature' => $this->getValuesSignature()
+        );
     }
 
     public function getInputHidden($name, $value)
