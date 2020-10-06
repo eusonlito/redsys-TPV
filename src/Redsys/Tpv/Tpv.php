@@ -19,12 +19,13 @@ class Tpv
     protected $option_prefix = 'Ds_Merchant_';
 
     protected $o_required = array(
-        'Environment', 'Currency', 'Terminal', 'ConsumerLanguage',
-        'MerchantCode', 'Key', 'SignatureVersion', 'MerchantName'
+        'Environment', 'Currency', 'Terminal',
+        'MerchantCode', 'Key', 'SignatureVersion'
     );
 
     protected $o_optional = array(
-        'UrlOK', 'UrlKO', 'TransactionType', 'MerchantURL', 'PayMethods', 'Titular'
+        'MerchantName', 'ConsumerLanguage', 'UrlOK', 'UrlKO',
+        'TransactionType', 'MerchantURL', 'PayMethods', 'Titular'
     );
 
     protected $environment = '';
